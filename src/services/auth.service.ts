@@ -12,7 +12,7 @@ export const authService = {
     return response.data
   },
 
-  logout: async (): Promise<void> => {
-    await api.post('/auth/logout').catch(() => {})
+  logout: async (refreshToken: string): Promise<void> => {
+    await api.post('/auth/logout', { refreshToken }).catch(() => {})
   },
 }

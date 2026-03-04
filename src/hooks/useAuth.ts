@@ -11,7 +11,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginRequest) => authService.login(data),
     onSuccess: (data) => {
-      setAuth(data.user, data.accessToken, data.refreshToken)
+      setAuth(data.user, data.tokens.accessToken, data.tokens.refreshToken)
       navigate('/dashboard')
     },
   })
@@ -24,7 +24,7 @@ export function useRegister() {
   return useMutation({
     mutationFn: (data: RegisterRequest) => authService.register(data),
     onSuccess: (data) => {
-      setAuth(data.user, data.accessToken, data.refreshToken)
+      setAuth(data.user, data.tokens.accessToken, data.tokens.refreshToken)
       navigate('/dashboard')
     },
   })
@@ -32,11 +32,11 @@ export function useRegister() {
 
 export function useLogout() {
   const navigate = useNavigate()
-  const { logout } = useAuthStore()
+  const { logout, refreshToken } = useAuthStore()
   const queryClient = useQueryClient()
 
   return () => {
-    authService.logout()
+    if (refreshToken) authService.logout(refreshToken)
     logout()
     queryClient.clear()
     navigate('/login')

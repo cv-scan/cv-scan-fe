@@ -1,10 +1,10 @@
 import api from './api'
-import type { JobDescription, CreateJDRequest } from '../types'
+import type { JobDescription, CreateJDRequest, PaginatedResponse } from '../types'
 
 export const jdService = {
   getAll: async (): Promise<JobDescription[]> => {
-    const response = await api.get<JobDescription[]>('/job-descriptions')
-    return response.data
+    const response = await api.get<PaginatedResponse<JobDescription>>('/job-descriptions')
+    return response.data.data
   },
 
   getById: async (id: string): Promise<JobDescription> => {

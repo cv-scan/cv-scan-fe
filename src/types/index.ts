@@ -3,12 +3,15 @@ export interface User {
   id: string
   email: string
   name: string
+  role: string
+  isActive: boolean
   createdAt: string
 }
 
 export interface AuthTokens {
   accessToken: string
   refreshToken: string
+  expiresIn: number
 }
 
 export interface LoginRequest {
@@ -23,9 +26,8 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  accessToken: string
-  refreshToken: string
   user: User
+  tokens: AuthTokens
 }
 
 // Job Description
@@ -123,7 +125,10 @@ export interface ApiResponse<T> {
 
 export interface PaginatedResponse<T> {
   data: T[]
-  total: number
-  page: number
-  limit: number
+  meta: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
 }
