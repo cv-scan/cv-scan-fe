@@ -2,6 +2,7 @@ import { useState, useRef, type DragEvent, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCVUpload } from '../../hooks/useCVUpload'
 import { Button } from '../../components/ui/Button'
+import { Input } from '../../components/ui/Input'
 import { Card } from '../../components/ui/Card'
 import { cn } from '../../utils/cn'
 
@@ -14,6 +15,8 @@ export function CVUploadPage() {
   const [dragActive, setDragActive] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
+  const [candidateName, setCandidateName] = useState('')
+  const [candidateEmail, setCandidateEmail] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   const validateFile = (file: File): string | null => {
@@ -58,7 +61,11 @@ export function CVUploadPage() {
 
   const handleUpload = () => {
     if (selectedFile) {
-      upload(selectedFile)
+      upload({
+        file: selectedFile,
+        candidateName: candidateName.trim() || undefined,
+        candidateEmail: candidateEmail.trim() || undefined,
+      })
     }
   }
 
@@ -102,6 +109,22 @@ export function CVUploadPage() {
       </div>
 
       <Card>
+        <div className="space-y-4 mb-5">
+          <Input
+            label="Candidate Name"
+            placeholder="e.g. Nguyen Van A"
+            value={candidateName}
+            onChange={(e) => setCandidateName(e.target.value)}
+          />
+          <Input
+            label="Candidate Email"
+            type="email"
+            placeholder="e.g. candidate@email.com"
+            value={candidateEmail}
+            onChange={(e) => setCandidateEmail(e.target.value)}
+          />
+        </div>
+
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}

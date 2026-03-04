@@ -97,15 +97,17 @@ export interface CategoryScore {
   feedback?: string
 }
 
+export type Recommendation = 'STRONG_YES' | 'YES' | 'MAYBE' | 'NO' | 'STRONG_NO'
+
 export interface Evaluation {
   id: string
   jobDescriptionId: string
   cvId: string
   status: EvaluationStatus
   overallScore?: number
+  recommendation?: Recommendation
+  errorMessage?: string | null
   categoryScores?: CategoryScore[]
-  summary?: string
-  recommendations?: string[]
   jobDescription?: JobDescription
   cv?: CV
   createdAt: string

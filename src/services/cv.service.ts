@@ -29,11 +29,21 @@ export const cvService = {
     return normalize(response.data)
   },
 
-  upload: async (file: File, onProgress?: (progress: number) => void): Promise<CV> => {
+  upload: async (
+    file: File,
+    candidateName?: string,
+    candidateEmail?: string,
+    onProgress?: (progress: number) => void,
+  ): Promise<CV> => {
     const formData = new FormData()
     formData.append('file', file)
 
+    const params: Record<string, string> = {}
+    if (candidateName) params.candidateName = candidateName
+    if (candidateEmail) params.candidateEmail = candidateEmail
+
     const response = await api.post<unknown>('/cvs', formData, {
+      params,
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {

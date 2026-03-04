@@ -1,5 +1,5 @@
 import api from './api'
-import type { Evaluation, CreateEvaluationRequest, PaginatedResponse, EvaluationStatus, ScoreCategory } from '../types'
+import type { Evaluation, CreateEvaluationRequest, PaginatedResponse, EvaluationStatus, ScoreCategory, Recommendation } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalize(raw: any): Evaluation {
@@ -9,6 +9,8 @@ function normalize(raw: any): Evaluation {
     jobDescriptionId: raw.jobDescriptionId,
     status: (raw.status as string).toLowerCase() as EvaluationStatus,
     overallScore: raw.overallScore != null ? Math.round(raw.overallScore * 100) : undefined,
+    recommendation: raw.recommendation as Recommendation | undefined,
+    errorMessage: raw.errorMessage,
     categoryScores: raw.scores?.map((s: { category: string; rawScore: number; rationale: string; evidence: string[]; gaps: string[] }) => ({
       category: s.category as ScoreCategory,
       score: Math.round(s.rawScore * 100),

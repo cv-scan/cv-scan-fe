@@ -7,7 +7,19 @@ import { Button } from '../../components/ui/Button'
 import { Spinner } from '../../components/ui/Spinner'
 import { ScoreCard } from '../../components/evaluation/ScoreCard'
 import { ScoreBar } from '../../components/evaluation/ScoreBar'
-import type { EvaluationStatus, ScoreCategory } from '../../types'
+import type { EvaluationStatus, ScoreCategory, Recommendation } from '../../types'
+
+function RecommendationBadge({ rec }: { rec: Recommendation }) {
+  const map: Record<Recommendation, { label: string; variant: 'default' | 'success' | 'warning' | 'danger' | 'info' }> = {
+    STRONG_YES: { label: 'Strong Yes', variant: 'success' },
+    YES: { label: 'Yes', variant: 'success' },
+    MAYBE: { label: 'Maybe', variant: 'warning' },
+    NO: { label: 'No', variant: 'danger' },
+    STRONG_NO: { label: 'Strong No', variant: 'danger' },
+  }
+  const { label, variant } = map[rec] || { label: rec, variant: 'default' }
+  return <Badge variant={variant}>{label}</Badge>
+}
 
 const CATEGORY_LABELS: Record<ScoreCategory, string> = {
   SKILLS: 'Skills Match',
@@ -80,6 +92,7 @@ export function EvalDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={evaluation.status} />
+          {evaluation.recommendation && <RecommendationBadge rec={evaluation.recommendation} />}
           <span className="text-xs text-gray-400">
             {new Date(evaluation.createdAt).toLocaleDateString()}
           </span>
@@ -179,7 +192,7 @@ export function EvalDetailPage() {
       {evaluation.status === 'failed' && (
         <Card className="bg-red-50 border-red-200">
           <p className="text-sm text-red-700">
-            Evaluation failed. This may be due to an unreadable CV or a processing error. Please try again.
+            {evaluation.errorMessage || 'Evaluation failed. This may be due to an unreadable CV or a processing error. Please try again.'}
           </p>
         </Card>
       )}

@@ -9,7 +9,7 @@ import { Badge } from '../../components/ui/Badge'
 import { Spinner } from '../../components/ui/Spinner'
 import { Card } from '../../components/ui/Card'
 import { Modal } from '../../components/ui/Modal'
-import type { EvaluationStatus } from '../../types'
+import type { EvaluationStatus, Recommendation } from '../../types'
 
 function StatusBadge({ status }: { status: EvaluationStatus }) {
   const map: Record<EvaluationStatus, { label: string; variant: 'default' | 'success' | 'warning' | 'danger' | 'info' }> = {
@@ -19,6 +19,18 @@ function StatusBadge({ status }: { status: EvaluationStatus }) {
     failed: { label: 'Failed', variant: 'danger' },
   }
   const { label, variant } = map[status] || map.pending
+  return <Badge variant={variant}>{label}</Badge>
+}
+
+function RecommendationBadge({ rec }: { rec: Recommendation }) {
+  const map: Record<Recommendation, { label: string; variant: 'default' | 'success' | 'warning' | 'danger' | 'info' }> = {
+    STRONG_YES: { label: 'Strong Yes', variant: 'success' },
+    YES: { label: 'Yes', variant: 'success' },
+    MAYBE: { label: 'Maybe', variant: 'warning' },
+    NO: { label: 'No', variant: 'danger' },
+    STRONG_NO: { label: 'Strong No', variant: 'danger' },
+  }
+  const { label, variant } = map[rec] || { label: rec, variant: 'default' }
   return <Badge variant={variant}>{label}</Badge>
 }
 
@@ -109,10 +121,13 @@ export function EvalListPage() {
                     </p>
                   </div>
                   <div className="ml-4 flex items-center gap-3">
-                    {eval_.overallScore !== undefined && eval_.status === 'completed' ? (
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-blue-600">{eval_.overallScore}%</div>
-                        <div className="text-xs text-gray-400">Overall Score</div>
+                    {eval_.status === 'completed' && eval_.overallScore !== undefined ? (
+                      <div className="flex items-center gap-2">
+                        {eval_.recommendation && <RecommendationBadge rec={eval_.recommendation} />}
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-blue-600">{eval_.overallScore}%</div>
+                          <div className="text-xs text-gray-400">Overall Score</div>
+                        </div>
                       </div>
                     ) : (
                       <StatusBadge status={eval_.status} />
@@ -145,9 +160,12 @@ export function EvalListPage() {
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a job description...</option>
-              {jds.map((jd) => (
-                <option key={jd.id} value={jd.id}>{jd.title}</option>
-              ))}
+              {jds.length === 0
+                ? <option disabled>No job descriptions — create one first</option>
+                : jds.map((jd) => (
+                    <option key={jd.id} value={jd.id}>{jd.title}</option>
+                  ))
+              }
             </select>
           </div>
 
@@ -161,9 +179,14 @@ export function EvalListPage() {
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a CV...</option>
-              {cvs.map((cv) => (
-                <option key={cv.id} value={cv.id}>{cv.fileName}</option>
-              ))}
+              {cvs.length === 0
+                ? <option disabled>No CVs — upload one first</option>
+                : cvs.map((cv) => (
+                    <option key={cv.id} value={cv.id}>
+                      {cv.parsedData?.name ? `${cv.parsedData.name} — ${cv.fileName}` : cv.fileName}
+                    </option>
+                  ))
+              }
             </select>
           </div>
 

@@ -55,13 +55,8 @@ export function JDDetailPage() {
       </div>
 
       <Card>
-        <h2 className="text-base font-semibold text-gray-900 mb-3">Description</h2>
+        <h2 className="text-base font-semibold text-gray-900 mb-3">Job Description</h2>
         <p className="text-sm text-gray-700 whitespace-pre-wrap">{jd.description}</p>
-      </Card>
-
-      <Card>
-        <h2 className="text-base font-semibold text-gray-900 mb-3">Requirements</h2>
-        <p className="text-sm text-gray-700 whitespace-pre-wrap">{jd.requirements}</p>
       </Card>
 
       {jd.extractedSkills && jd.extractedSkills.length > 0 && (
