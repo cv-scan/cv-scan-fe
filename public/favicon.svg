@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Document background -->
+  <rect x="4" y="2" width="18" height="24" rx="2" fill="#2563eb"/>
+  <!-- Document fold corner -->
+  <path d="M18 2 L22 6 L18 6 Z" fill="#1d4ed8"/>
+  <!-- Text lines on document -->
+  <rect x="7" y="9" width="12" height="2" rx="1" fill="white" opacity="0.9"/>
+  <rect x="7" y="13" width="10" height="2" rx="1" fill="white" opacity="0.7"/>
+  <rect x="7" y="17" width="11" height="2" rx="1" fill="white" opacity="0.7"/>
+  <rect x="7" y="21" width="8" height="2" rx="1" fill="white" opacity="0.5"/>
+  <!-- Magnifying glass -->
+  <circle cx="23" cy="23" r="7" fill="white" stroke="#2563eb" stroke-width="1.5"/>
+  <circle cx="23" cy="23" r="4.5" fill="none" stroke="#2563eb" stroke-width="2"/>
+  <line x1="26.5" y1="26.5" x2="29.5" y2="29.5" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+  <!-- Check mark inside magnifier -->
+  <path d="M21 23 L22.5 24.5 L25.5 21.5" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
