@@ -148,29 +148,6 @@ export function EvalDetailPage() {
             </div>
           </Card>
 
-          {evaluation.summary && (
-            <Card>
-              <h2 className="text-base font-semibold text-gray-900 mb-3">AI Summary</h2>
-              <p className="text-sm text-gray-700 leading-relaxed">{evaluation.summary}</p>
-            </Card>
-          )}
-
-          {evaluation.recommendations && evaluation.recommendations.length > 0 && (
-            <Card>
-              <h2 className="text-base font-semibold text-gray-900 mb-3">Recommendations</h2>
-              <ul className="space-y-2">
-                {evaluation.recommendations.map((rec, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                    <svg className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                    {rec}
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
-
           {evaluation.categoryScores && (
             <Card>
               <h2 className="text-base font-semibold text-gray-900 mb-3">Category Feedback</h2>
