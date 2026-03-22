@@ -71,11 +71,11 @@ export function CVUploadPage() {
 
   if (isSuccess && uploadedCV) {
     return (
-      <div className="max-w-xl space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">CV Uploaded</h1>
-        <Card className="text-center py-8">
-          <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-            <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="max-w-xl space-y-5">
+        <h1 className="text-xl font-bold text-gray-900">Upload Complete</h1>
+        <Card className="text-center py-10">
+          <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -95,17 +95,17 @@ export function CVUploadPage() {
   }
 
   return (
-    <div className="max-w-xl space-y-6">
-      <div className="flex items-center gap-2">
+    <div className="max-w-xl space-y-5">
+      <div className="flex items-center gap-3">
         <button
           onClick={() => navigate('/cv')}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="h-8 w-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:border-gray-300 transition-colors"
         >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">Upload CV</h1>
+        <h1 className="text-xl font-bold text-gray-900">Upload CV</h1>
       </div>
 
       <Card>
@@ -125,18 +125,19 @@ export function CVUploadPage() {
           />
         </div>
 
+        {/* Drop zone */}
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onClick={() => inputRef.current?.click()}
           className={cn(
-            'border-2 border-dashed rounded-lg p-10 text-center cursor-pointer transition-colors',
+            'border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-200',
             dragActive
-              ? 'border-blue-400 bg-blue-50'
+              ? 'border-red-400 bg-red-50'
               : selectedFile
-              ? 'border-green-400 bg-green-50'
-              : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+              ? 'border-emerald-400 bg-emerald-50'
+              : 'border-gray-200 hover:border-red-300 hover:bg-red-50/50'
           )}
         >
           <input
@@ -149,16 +150,16 @@ export function CVUploadPage() {
 
           {selectedFile ? (
             <div>
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
-                <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
+                <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <p className="font-medium text-gray-900">{selectedFile.name}</p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="font-semibold text-gray-900 text-sm">{selectedFile.name}</p>
+              <p className="text-xs text-gray-400 mt-1">
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
-              <p className="text-xs text-blue-600 mt-2">Click to change file</p>
+              <p className="text-xs text-red-500 mt-2 font-medium">Click to change file</p>
             </div>
           ) : (
             <div>
@@ -167,8 +168,8 @@ export function CVUploadPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
               </div>
-              <p className="font-medium text-gray-900">Drop your CV here</p>
-              <p className="text-sm text-gray-500 mt-1">or click to browse files</p>
+              <p className="font-medium text-gray-900 text-sm">Drop your CV here</p>
+              <p className="text-sm text-gray-400 mt-1">or click to browse files</p>
               <p className="text-xs text-gray-400 mt-2">PDF, DOCX up to {MAX_SIZE_MB}MB</p>
             </div>
           )}
@@ -178,22 +179,23 @@ export function CVUploadPage() {
           <p className="text-sm text-red-500 mt-2">{fileError}</p>
         )}
 
+        {/* Upload progress */}
         {isPending && (
           <div className="mt-4">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <div className="flex justify-between text-xs text-gray-500 mb-1.5">
               <span>Uploading...</span>
-              <span>{progress}%</span>
+              <span className="font-medium">{progress}%</span>
             </div>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                className="h-full bg-red-500 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
         )}
 
-        <div className="flex gap-3 mt-4">
+        <div className="flex gap-3 mt-5">
           <Button
             variant="secondary"
             onClick={() => navigate('/cv')}

@@ -42,23 +42,26 @@ export function JDCreatePage() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <div className="flex items-center gap-2">
+    <div className="max-w-2xl space-y-5">
+      <div className="flex items-center gap-3">
         <button
           onClick={() => navigate('/jd')}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="h-8 w-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:border-gray-300 transition-colors"
         >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">New Job Description</h1>
+        <h1 className="text-xl font-bold text-gray-900">New Job Description</h1>
       </div>
 
       <Card>
         {createMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">Failed to create job description. Please try again.</p>
+          <div className="mb-5 p-3.5 bg-red-50 border border-red-100 rounded-lg flex gap-2.5">
+            <svg className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-red-500">Failed to create job description. Please try again.</p>
           </div>
         )}
 

@@ -6,20 +6,25 @@ export function Header() {
   const logout = useLogout()
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+    <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0">
+      <div />
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-bold text-blue-600">CV Scan</h1>
-        <span className="text-xs text-gray-400 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">AI-Powered</span>
-      </div>
-      <div className="flex items-center gap-4">
-        <div className="text-sm text-gray-600">
-          <span className="font-medium">{user?.name}</span>
+        <div className="flex items-center gap-2.5">
+          <div className="h-7 w-7 rounded-full bg-gray-100 flex items-center justify-center">
+            <span className="text-xs font-semibold text-gray-600">
+              {user?.name?.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div className="text-sm">
+            <p className="font-medium text-gray-800 leading-none">{user?.name}</p>
+          </div>
         </div>
+        <div className="h-4 w-px bg-gray-200" />
         <button
           onClick={logout}
-          className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+          className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
         >
-          Logout
+          Sign out
         </button>
       </div>
     </header>

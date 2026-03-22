@@ -81,11 +81,11 @@ export function EvalListPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Evaluations</h1>
-          <p className="text-gray-500 mt-1">{evaluations.length} evaluations total</p>
+          <p className="text-gray-500 mt-1 text-sm">{evaluations.length} evaluations total</p>
         </div>
         <Button onClick={() => setShowModal(true)}>
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,37 +96,49 @@ export function EvalListPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12">
+        <div className="flex justify-center py-16">
           <Spinner size="lg" />
         </div>
       ) : evaluations.length === 0 ? (
-        <Card className="text-center py-12">
-          <p className="text-gray-500 mb-3">No evaluations yet.</p>
-          <Button variant="secondary" onClick={() => setShowModal(true)}>
+        <Card className="text-center py-16">
+          <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+            <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <p className="text-gray-500 text-sm mb-4">No evaluations yet.</p>
+          <Button onClick={() => setShowModal(true)}>
             Evaluate a CV
           </Button>
         </Card>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-3">
           {evaluations.map((eval_) => (
             <Link key={eval_.id} to={`/evaluations/${eval_.id}`}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
-                      {eval_.jobDescription?.title || `JD #${eval_.jobDescriptionId.slice(0, 8)}`}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {eval_.cv?.fileName || `CV #${eval_.cvId.slice(0, 8)}`}
-                    </p>
+              <Card className="hover:shadow-md transition-all duration-200 cursor-pointer hover:border-gray-300" padding={false}>
+                <div className="p-5 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                      <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {eval_.jobDescription?.title || `JD #${eval_.jobDescriptionId.slice(0, 8)}`}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5 truncate">
+                        {eval_.cv?.fileName || `CV #${eval_.cvId.slice(0, 8)}`}
+                      </p>
+                    </div>
                   </div>
-                  <div className="ml-4 flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-shrink-0">
                     {eval_.status === 'completed' && eval_.overallScore !== undefined ? (
                       <div className="flex items-center gap-2">
                         {eval_.recommendation && <RecommendationBadge rec={eval_.recommendation} />}
                         <div className="text-right">
-                          <div className="text-lg font-bold text-blue-600">{eval_.overallScore}%</div>
-                          <div className="text-xs text-gray-400">Overall Score</div>
+                          <div className="text-lg font-bold text-red-500">{eval_.overallScore}%</div>
+                          <div className="text-xs text-gray-400">Score</div>
                         </div>
                       </div>
                     ) : (
@@ -151,13 +163,13 @@ export function EvalListPage() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Job Description
             </label>
             <select
               value={selectedJD}
               onChange={(e) => setSelectedJD(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent hover:border-gray-400 transition-colors"
             >
               <option value="">Select a job description...</option>
               {jds.length === 0
@@ -170,13 +182,13 @@ export function EvalListPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               CV
             </label>
             <select
               value={selectedCV}
               onChange={(e) => setSelectedCV(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent hover:border-gray-400 transition-colors"
             >
               <option value="">Select a CV...</option>
               {cvs.length === 0

@@ -106,6 +106,8 @@ export interface Evaluation {
   status: EvaluationStatus
   overallScore?: number
   recommendation?: Recommendation
+  summary?: string
+  recommendations?: string[]
   errorMessage?: string | null
   categoryScores?: CategoryScore[]
   jobDescription?: JobDescription
