@@ -39,6 +39,6 @@ export function useLogout() {
     if (refreshToken) authService.logout(refreshToken)
     logout()
     queryClient.clear()
-    navigate('/login')
+    navigate('/')
   }
 }
