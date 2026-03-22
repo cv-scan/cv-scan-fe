@@ -158,10 +158,10 @@ export function EvalDetailPage() {
             </div>
           </Card>
 
-          {/* AI Summary */}
+          {/* Summary */}
           {evaluation.summary && (
             <Card>
-              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">AI Summary</h2>
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Summary</h2>
               <p className="text-sm text-gray-700 leading-relaxed">{evaluation.summary}</p>
             </Card>
           )}
@@ -173,7 +173,7 @@ export function EvalDetailPage() {
               <ul className="space-y-2.5">
                 {evaluation.recommendations.map((rec, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-gray-700">
-                    <div className="h-5 w-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="h-5 w-5 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
                       <svg className="h-3 w-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                       </svg>
