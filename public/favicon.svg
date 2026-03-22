@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Red rounded background -->
+  <rect width="32" height="32" rx="7" fill="#EF4444"/>
+  <!-- Document lines (white) -->
+  <path d="M10 9h8.586L22 12.414V23a1 1 0 01-1 1H11a1 1 0 01-1-1V9z" stroke="white" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+  <path d="M18.5 9v3.5H22" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="13" y1="16" x2="19" y2="16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="13" y1="19" x2="19" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
