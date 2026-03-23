@@ -51,6 +51,18 @@ export const jdService = {
     return normalize(response.data)
   },
 
+  uploadFromFile: async (file: File, title?: string): Promise<JobDescription> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const params: Record<string, string> = {}
+    if (title) params.title = title
+    const response = await api.post<unknown>('/job-descriptions/upload', formData, {
+      params,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return normalize(response.data)
+  },
+
   delete: async (id: string): Promise<void> => {
     await api.delete(`/job-descriptions/${id}`)
   },

@@ -1,28 +1,33 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { cvService } from '../services/cv.service'
+import type { CV } from '../types'
 
 interface UploadPayload {
-  file: File
-  candidateName?: string
-  candidateEmail?: string
+  files: File[]
 }
 
 export function useCVUpload() {
-  const [progress, setProgress] = useState(0)
+  const [progresses, setProgresses] = useState<Record<string, number>>({})
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: ({ file, candidateName, candidateEmail }: UploadPayload) =>
-      cvService.upload(file, candidateName, candidateEmail, setProgress),
+  const mutation = useMutation<CV[], Error, UploadPayload>({
+    mutationFn: ({ files }: UploadPayload) =>
+      Promise.all(
+        files.map((file) =>
+          cvService.upload(file, undefined, undefined, (p) =>
+            setProgresses((prev) => ({ ...prev, [file.name]: p }))
+          )
+        )
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cvs'] })
-      setProgress(0)
+      setProgresses({})
     },
     onError: () => {
-      setProgress(0)
+      setProgresses({})
     },
   })
 
-  return { ...mutation, progress }
+  return { ...mutation, progresses }
 }
