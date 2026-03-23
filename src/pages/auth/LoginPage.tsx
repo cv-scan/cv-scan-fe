@@ -18,10 +18,16 @@ export function LoginPage() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  const handleSwitchToRegister = () => {
+    reset();
+    login.reset();
+  };
 
   const onSubmit = (data: LoginFormData) => {
     login.mutate(data);
@@ -102,6 +108,7 @@ export function LoginPage() {
               Don't have an account?{" "}
               <Link
                 to="/register"
+                onClick={handleSwitchToRegister}
                 className="text-gray-700 hover:text-red-500 font-medium transition-colors"
               >
                 Create one
