@@ -19,6 +19,7 @@ function normalize(raw: any): Evaluation {
     status: (raw.status as string).toLowerCase() as EvaluationStatus,
     overallScore:
       raw.overallScore != null ? Math.round(raw.overallScore * 100) : undefined,
+    classification: raw.classification,
     recommendation: raw.recommendation as Recommendation | undefined,
     errorMessage: raw.errorMessage,
     categoryScores: raw.scores?.map(

@@ -122,6 +122,7 @@ export interface Evaluation {
   jdTitle?: string;
   status: EvaluationStatus;
   overallScore?: number;
+  classification?: string;
   recommendation?: Recommendation;
   summary?: string;
   recommendations?: string[];
@@ -136,6 +137,14 @@ export interface Evaluation {
 export interface CreateEvaluationRequest {
   jobDescriptionId: string;
   cvId: string;
+}
+
+// JD Stats
+export interface JDStats {
+  totalEvaluations: number;
+  averageScore: number | null;
+  recommendationBreakdown: Partial<Record<Recommendation, number>>;
+  categoryAverages: Partial<Record<ScoreCategory, number>>;
 }
 
 // API Response wrappers

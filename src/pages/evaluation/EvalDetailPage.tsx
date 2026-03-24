@@ -1,31 +1,27 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { evaluationService } from "../../services/evaluation.service";
-import { Card } from "../../components/ui/Card";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ScoreBar } from "../../components/evaluation/ScoreBar";
+import { ScoreCard } from "../../components/evaluation/ScoreCard";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
+import { Card } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
-import { ScoreCard } from "../../components/evaluation/ScoreCard";
-import { ScoreBar } from "../../components/evaluation/ScoreBar";
-import type {
-  EvaluationStatus,
-  ScoreCategory,
-  Recommendation,
-} from "../../types";
+import { evaluationService } from "../../services/evaluation.service";
+import type { EvaluationStatus, ScoreCategory } from "../../types";
 
-function RecommendationBadge({ rec }: { rec: Recommendation }) {
+function RecommendationBadge({ rec }: { rec: string }) {
   const map: Record<
-    Recommendation,
+    string,
     {
       label: string;
       variant: "default" | "success" | "warning" | "danger" | "info";
     }
   > = {
-    STRONG_YES: { label: "Strong Yes", variant: "success" },
-    YES: { label: "Yes", variant: "success" },
-    MAYBE: { label: "Maybe", variant: "warning" },
-    NO: { label: "No", variant: "danger" },
-    STRONG_NO: { label: "Strong No", variant: "danger" },
+    PASS: { label: "pass", variant: "success" },
+    // YES: { label: "Yes", variant: "success" },
+    WAITLIST: { label: "Waitlist", variant: "warning" },
+    FAIL: { label: "Fail", variant: "danger" },
+    // STRONG_NO: { label: "Strong No", variant: "danger" },
   };
   const { label, variant } = map[rec] || { label: rec, variant: "default" };
   return <Badge variant={variant}>{label}</Badge>;
@@ -101,6 +97,9 @@ export function EvalDetailPage() {
 
   const isProcessing =
     evaluation.status === "pending" || evaluation.status === "processing";
+  console.log("evaluation:", evaluation);
+
+  console.log("evaluation.classification", evaluation.classification);
 
   return (
     <div className="max-w-3xl space-y-5">
@@ -129,8 +128,8 @@ export function EvalDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={evaluation.status} />
-          {evaluation.recommendation && (
-            <RecommendationBadge rec={evaluation.recommendation} />
+          {evaluation.classification && (
+            <RecommendationBadge rec={evaluation.classification} />
           )}
           <span className="text-xs text-gray-400 ml-1">
             {new Date(evaluation.createdAt).toLocaleDateString()}

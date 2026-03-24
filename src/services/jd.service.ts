@@ -1,5 +1,5 @@
 import api from './api'
-import type { JobDescription, CreateJDRequest, PaginatedResponse } from '../types'
+import type { JobDescription, CreateJDRequest, PaginatedResponse, JDStats, Recommendation, ScoreCategory } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalize(raw: any): JobDescription {
@@ -65,5 +65,27 @@ export const jdService = {
 
   delete: async (id: string): Promise<void> => {
     await api.delete(`/job-descriptions/${id}`)
+  },
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getStats: async (id: string): Promise<JDStats> => {
+    const response = await api.get<any>(`/job-descriptions/${id}/stats`)
+    const raw = response.data
+    const toPercent = (v: number) => Math.round(v <= 1 ? v * 100 : v)
+    const avgRaw = raw.averageScore ?? raw.avgScore ?? null
+    return {
+      totalEvaluations: raw.totalEvaluations ?? raw.total ?? 0,
+      averageScore: avgRaw != null ? toPercent(avgRaw) : null,
+      recommendationBreakdown: Object.fromEntries(
+        Object.entries(raw.recommendationBreakdown ?? raw.recommendations ?? {}).map(
+          ([k, v]) => [k as Recommendation, v as number]
+        )
+      ),
+      categoryAverages: Object.fromEntries(
+        Object.entries(raw.categoryAverages ?? raw.categories ?? {}).map(
+          ([k, v]) => [k as ScoreCategory, toPercent(v as number)]
+        )
+      ),
+    }
   },
 }
