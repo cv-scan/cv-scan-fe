@@ -1,62 +1,53 @@
 import { useState, useRef, type DragEvent, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { jdService } from '../../services/jd.service'
+import type { EmploymentType, ExperienceLevel } from '../../types'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
-import { Textarea } from '../../components/ui/Textarea'
 import { Card } from '../../components/ui/Card'
 import { cn } from '../../utils/cn'
 
 const ACCEPTED_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 const MAX_SIZE_MB = 10
 
-const jdSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters'),
-  description: z.string().min(20, 'Description must be at least 20 characters'),
-  requirements: z.string().min(20, 'Requirements must be at least 20 characters'),
-})
-
-type JDFormData = z.infer<typeof jdSchema>
-type Mode = 'upload' | 'manual'
-
 export function JDCreatePage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [mode, setMode] = useState<Mode>('upload')
 
   // Upload state
   const [dragActive, setDragActive] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
   const [uploadTitle, setUploadTitle] = useState('')
+  const [uploadDepartmentId, setUploadDepartmentId] = useState('')
+  const [uploadExperienceLevel, setUploadExperienceLevel] = useState<ExperienceLevel | ''>('')
+  const [uploadEmploymentTypes, setUploadEmploymentTypes] = useState<EmploymentType[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<JDFormData>({
-    resolver: zodResolver(jdSchema),
-  })
+  const { data: departments = [] } = useQuery({ queryKey: ['departments'], queryFn: jdService.getDepartments })
+  const { data: employmentTypes = [] } = useQuery({ queryKey: ['employment-types'], queryFn: jdService.getEmploymentTypes })
+  const { data: experienceLevels = [] } = useQuery({ queryKey: ['experience-levels'], queryFn: jdService.getExperienceLevels })
 
   const onSuccess = (jd: { id: string }) => {
     queryClient.invalidateQueries({ queryKey: ['jds'] })
     navigate(`/jd/${jd.id}`)
   }
 
-  const createMutation = useMutation({
-    mutationFn: jdService.create,
-    onSuccess,
-  })
-
   const uploadMutation = useMutation({
-    mutationFn: ({ file, title }: { file: File; title?: string }) =>
-      jdService.uploadFromFile(file, title),
+    mutationFn: ({ file, title, departmentId, experienceLevel, employmentTypes }: {
+      file: File
+      title?: string
+      departmentId?: string
+      experienceLevel?: ExperienceLevel
+      employmentTypes?: EmploymentType[]
+    }) =>
+      jdService.uploadFromFile(file, { title, departmentId, experienceLevel, employmentTypes }),
     onSuccess,
   })
 
-  const isPending = createMutation.isPending || uploadMutation.isPending
-  const mutationError = createMutation.error || uploadMutation.error
+  const isPending = uploadMutation.isPending
+  const mutationError = uploadMutation.error
 
   const validateFile = (file: File): string | null => {
     if (!ACCEPTED_TYPES.includes(file.type)) return 'Only PDF and DOCX files are accepted.'
@@ -83,9 +74,21 @@ export function JDCreatePage() {
     e.target.value = ''
   }
 
+  const toggleEmploymentType = (et: EmploymentType) => {
+    setUploadEmploymentTypes((prev) =>
+      prev.includes(et) ? prev.filter((x) => x !== et) : [...prev, et]
+    )
+  }
+
   const handleUpload = () => {
     if (selectedFile) {
-      uploadMutation.mutate({ file: selectedFile, title: uploadTitle.trim() || undefined })
+      uploadMutation.mutate({
+        file: selectedFile,
+        title: uploadTitle.trim() || undefined,
+        departmentId: uploadDepartmentId || undefined,
+        experienceLevel: (uploadExperienceLevel as ExperienceLevel) || undefined,
+        employmentTypes: uploadEmploymentTypes.length ? uploadEmploymentTypes : undefined,
+      })
     }
   }
 
@@ -103,24 +106,6 @@ export function JDCreatePage() {
         <h1 className="text-xl font-bold text-gray-900">New Job Description</h1>
       </div>
 
-      {/* Mode tabs */}
-      <div className="flex gap-1 p-1 bg-gray-100 rounded-lg w-fit">
-        {(['upload', 'manual'] as Mode[]).map((m) => (
-          <button
-            key={m}
-            onClick={() => setMode(m)}
-            className={cn(
-              'px-4 py-1.5 text-sm font-medium rounded-md transition-colors',
-              mode === m
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            )}
-          >
-            {m === 'upload' ? 'Upload File' : 'Fill Manually'}
-          </button>
-        ))}
-      </div>
-
       <Card>
         {mutationError && (
           <div className="mb-5 p-3.5 bg-red-50 border border-red-100 rounded-lg flex gap-2.5">
@@ -131,14 +116,66 @@ export function JDCreatePage() {
           </div>
         )}
 
-        {mode === 'upload' ? (
-          <div className="space-y-5">
+        <div className="space-y-5">
             <Input
               label="Job Title (optional)"
               placeholder="Auto-extracted from file if left empty"
               value={uploadTitle}
               onChange={(e) => setUploadTitle(e.target.value)}
             />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700">Department (optional)</label>
+                <select
+                  value={uploadDepartmentId}
+                  onChange={(e) => setUploadDepartmentId(e.target.value)}
+                  className="h-9 rounded-lg border border-gray-200 px-3 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400"
+                >
+                  <option value="">— None —</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700">Experience Level (optional)</label>
+                <select
+                  value={uploadExperienceLevel}
+                  onChange={(e) => setUploadExperienceLevel(e.target.value as ExperienceLevel | '')}
+                  className="h-9 rounded-lg border border-gray-200 px-3 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400"
+                >
+                  <option value="">— None —</option>
+                  {experienceLevels.map((lvl) => (
+                    <option key={lvl} value={lvl}>{lvl.replace('_', ' ')}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {employmentTypes.length > 0 && (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700">Employment Types (optional)</label>
+                <div className="flex flex-wrap gap-2">
+                  {employmentTypes.map((et) => (
+                    <button
+                      key={et}
+                      type="button"
+                      onClick={() => toggleEmploymentType(et)}
+                      className={cn(
+                        'px-3 py-1 rounded-full text-xs font-medium border transition-colors',
+                        uploadEmploymentTypes.includes(et)
+                          ? 'bg-red-500 border-red-500 text-white'
+                          : 'bg-white border-gray-200 text-gray-600 hover:border-red-300'
+                      )}
+                    >
+                      {et.replace('_', ' ')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div
               onDrop={handleDrop}
@@ -201,41 +238,6 @@ export function JDCreatePage() {
               </Button>
             </div>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit((data) => createMutation.mutate(data))} className="space-y-5">
-            <Input
-              label="Job Title"
-              placeholder="e.g. Senior Frontend Engineer"
-              error={errors.title?.message}
-              {...register('title')}
-            />
-
-            <Textarea
-              label="Job Description"
-              placeholder="Describe the role, responsibilities, and what the candidate will be doing..."
-              rows={5}
-              error={errors.description?.message}
-              {...register('description')}
-            />
-
-            <Textarea
-              label="Requirements"
-              placeholder="List the required skills, qualifications, and experience..."
-              rows={5}
-              error={errors.requirements?.message}
-              {...register('requirements')}
-            />
-
-            <div className="flex gap-3 pt-2">
-              <Button type="button" variant="secondary" onClick={() => navigate('/jd')}>
-                Cancel
-              </Button>
-              <Button type="submit" loading={isPending}>
-                Create Job Description
-              </Button>
-            </div>
-          </form>
-        )}
       </Card>
     </div>
   )

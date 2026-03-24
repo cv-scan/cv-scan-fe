@@ -10,7 +10,11 @@ import { Spinner } from "../../components/ui/Spinner";
 import { Card } from "../../components/ui/Card";
 import { Modal } from "../../components/ui/Modal";
 import { useToast } from "../../components/ui/Toast";
-import type { EvaluationStatus, JobDescription, Recommendation } from "../../types";
+import type {
+  Classification,
+  EvaluationStatus,
+  JobDescription,
+} from "../../types";
 
 function StatusBadge({ status }: { status: EvaluationStatus }) {
   const map: Record<
@@ -29,21 +33,23 @@ function StatusBadge({ status }: { status: EvaluationStatus }) {
   return <Badge variant={variant}>{label}</Badge>;
 }
 
-function RecommendationBadge({ rec }: { rec: Recommendation }) {
+function ClassificationBadge({
+  classification,
+}: {
+  classification: Classification;
+}) {
   const map: Record<
-    Recommendation,
+    Classification,
     {
       label: string;
       variant: "default" | "success" | "warning" | "danger" | "info";
     }
   > = {
-    STRONG_YES: { label: "Strong Yes", variant: "success" },
-    YES: { label: "Yes", variant: "success" },
-    MAYBE: { label: "Maybe", variant: "warning" },
-    NO: { label: "No", variant: "danger" },
-    STRONG_NO: { label: "Strong No", variant: "danger" },
+    PASS: { label: "Pass", variant: "success" },
+    WAITLIST: { label: "Waitlist", variant: "warning" },
+    FAIL: { label: "Fail", variant: "danger" },
   };
-  const { label, variant } = map[rec] || { label: rec, variant: "default" };
+  const { label, variant } = map[classification];
   return <Badge variant={variant}>{label}</Badge>;
 }
 
@@ -62,12 +68,15 @@ function SearchableJDSelect({
   const selected = jds.find((jd) => jd.id === value);
 
   const filtered = jds.filter((jd) =>
-    jd.title.toLowerCase().includes(search.toLowerCase())
+    jd.title.toLowerCase().includes(search.toLowerCase()),
   );
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -83,10 +92,24 @@ function SearchableJDSelect({
         className="flex items-center gap-2 pl-3 pr-2 py-2 text-sm border border-gray-300 rounded-lg bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors min-w-[180px] max-w-[260px]"
       >
         <span className="flex-1 text-left truncate">
-          {selected ? selected.title : <span className="text-gray-400">All JDs</span>}
+          {selected ? (
+            selected.title
+          ) : (
+            <span className="text-gray-400">All JDs</span>
+          )}
         </span>
-        <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg
+          className="h-4 w-4 text-gray-400 flex-shrink-0"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -94,8 +117,18 @@ function SearchableJDSelect({
         <div className="absolute z-20 top-full mt-1 left-0 w-72 bg-white border border-gray-200 rounded-xl shadow-lg">
           <div className="p-2 border-b border-gray-100">
             <div className="relative">
-              <svg className="h-4 w-4 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="h-4 w-4 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
               <input
                 autoFocus
@@ -109,7 +142,11 @@ function SearchableJDSelect({
           </div>
           <div className="max-h-52 overflow-y-auto py-1">
             <button
-              onClick={() => { onChange(""); setOpen(false); setSearch(""); }}
+              onClick={() => {
+                onChange("");
+                setOpen(false);
+                setSearch("");
+              }}
               className="w-full text-left px-3 py-2 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
             >
               All JDs
@@ -120,9 +157,15 @@ function SearchableJDSelect({
               filtered.map((jd) => (
                 <button
                   key={jd.id}
-                  onClick={() => { onChange(jd.id); setOpen(false); setSearch(""); }}
+                  onClick={() => {
+                    onChange(jd.id);
+                    setOpen(false);
+                    setSearch("");
+                  }}
                   className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors truncate ${
-                    jd.id === value ? "font-medium text-red-600 bg-red-50" : "text-gray-700"
+                    jd.id === value
+                      ? "font-medium text-red-600 bg-red-50"
+                      : "text-gray-700"
                   }`}
                 >
                   {jd.title}
@@ -136,14 +179,13 @@ function SearchableJDSelect({
   );
 }
 
-const RECOMMENDATION_OPTIONS: { value: Recommendation | ""; label: string }[] = [
-  { value: "", label: "All Classifications" },
-  { value: "STRONG_YES", label: "Strong Yes" },
-  { value: "YES", label: "Yes" },
-  { value: "MAYBE", label: "Maybe" },
-  { value: "NO", label: "No" },
-  { value: "STRONG_NO", label: "Strong No" },
-];
+const CLASSIFICATION_OPTIONS: { value: Classification | ""; label: string }[] =
+  [
+    { value: "", label: "All Classifications" },
+    { value: "PASS", label: "Pass" },
+    { value: "WAITLIST", label: "Waitlist" },
+    { value: "FAIL", label: "Fail" },
+  ];
 
 export function EvalListPage() {
   const navigate = useNavigate();
@@ -152,12 +194,25 @@ export function EvalListPage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedJD, setSelectedJD] = useState("");
   const [selectedCV, setSelectedCV] = useState("");
-  const [filterRecommendation, setFilterRecommendation] = useState<Recommendation | "">("");
+  const [filterClassification, setFilterClassification] = useState<
+    Classification | ""
+  >("");
+  const [filterDepartmentId, setFilterDepartmentId] = useState("");
   const [filterJDId, setFilterJDId] = useState("");
 
   const { data: evaluations = [], isLoading } = useQuery({
-    queryKey: ["evaluations"],
-    queryFn: evaluationService.getAll,
+    queryKey: [
+      "evaluations",
+      filterClassification,
+      filterDepartmentId,
+      filterJDId,
+    ],
+    queryFn: () =>
+      evaluationService.getAll({
+        classification: filterClassification || undefined,
+        departmentId: filterDepartmentId || undefined,
+        jobDescriptionId: filterJDId || undefined,
+      }),
     refetchInterval: (query) => {
       const data = query.state.data;
       const hasProcessing =
@@ -170,6 +225,11 @@ export function EvalListPage() {
   const { data: jds = [] } = useQuery({
     queryKey: ["jds"],
     queryFn: jdService.getAll,
+  });
+
+  const { data: departments = [] } = useQuery({
+    queryKey: ["departments"],
+    queryFn: jdService.getDepartments,
   });
 
   const { data: cvs = [] } = useQuery({
@@ -196,13 +256,12 @@ export function EvalListPage() {
     }
   };
 
-  const filtered = evaluations.filter((ev) => {
-    if (filterRecommendation && ev.recommendation !== filterRecommendation) return false;
-    if (filterJDId && ev.jobDescriptionId !== filterJDId) return false;
-    return true;
-  });
+  const filtered = evaluations;
 
-  const hasFilters = filterRecommendation !== "" || filterJDId !== "";
+  const hasFilters =
+    filterClassification !== "" ||
+    filterDepartmentId !== "" ||
+    filterJDId !== "";
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -234,12 +293,29 @@ export function EvalListPage() {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <select
-          value={filterRecommendation}
-          onChange={(e) => setFilterRecommendation(e.target.value as Recommendation | "")}
+          value={filterClassification}
+          onChange={(e) =>
+            setFilterClassification(e.target.value as Classification | "")
+          }
           className="pl-3 pr-8 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent hover:border-gray-400 transition-colors"
         >
-          {RECOMMENDATION_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          {CLASSIFICATION_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={filterDepartmentId}
+          onChange={(e) => setFilterDepartmentId(e.target.value)}
+          className="pl-3 pr-8 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent hover:border-gray-400 transition-colors"
+        >
+          <option value="">All Departments</option>
+          {departments.map((department) => (
+            <option key={department.id} value={department.id}>
+              {department.name}
+            </option>
           ))}
         </select>
 
@@ -251,7 +327,11 @@ export function EvalListPage() {
 
         {hasFilters && (
           <button
-            onClick={() => { setFilterRecommendation(""); setFilterJDId(""); }}
+            onClick={() => {
+              setFilterClassification("");
+              setFilterDepartmentId("");
+              setFilterJDId("");
+            }}
             className="text-sm text-gray-500 hover:text-gray-700 underline"
           >
             Clear filters
@@ -291,7 +371,9 @@ export function EvalListPage() {
         </Card>
       ) : filtered.length === 0 ? (
         <Card className="text-center py-10">
-          <p className="text-gray-500 text-sm">No evaluations match the current filters.</p>
+          <p className="text-gray-500 text-sm">
+            No evaluations match the current filters.
+          </p>
         </Card>
       ) : (
         <div className="grid gap-3">
@@ -333,15 +415,21 @@ export function EvalListPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    {eval_.recommendation && (
-                      <RecommendationBadge rec={eval_.recommendation} />
+                    {eval_.classification && (
+                      <ClassificationBadge
+                        classification={eval_.classification as Classification}
+                      />
                     )}
-                    {eval_.status === "completed" && eval_.overallScore !== undefined ? (
+                    {/* {eval_.recommendation && (
+                      <RecommendationBadge rec={eval_.recommendation} />
+                    )} */}
+                    {eval_.status === "completed" &&
+                    eval_.overallScore !== undefined ? (
                       <div className="text-right">
                         <div className="text-lg font-bold text-red-500">
                           {eval_.overallScore}%
                         </div>
-                        <div className="text-xs text-gray-400">Score</div>
+                        {/* <div className="text-xs text-gray-400">Score</div> */}
                       </div>
                     ) : (
                       <StatusBadge status={eval_.status} />

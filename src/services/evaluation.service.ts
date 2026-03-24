@@ -6,6 +6,7 @@ import type {
   EvaluationStatus,
   ScoreCategory,
   Recommendation,
+  Classification,
 } from "../types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,8 +49,16 @@ function normalize(raw: any): Evaluation {
 }
 
 export const evaluationService = {
-  getAll: async (): Promise<Evaluation[]> => {
-    const response = await api.get<PaginatedResponse<unknown>>("/evaluations");
+  getAll: async (params?: {
+    classification?: Classification
+    departmentId?: string
+    jobDescriptionId?: string
+  }): Promise<Evaluation[]> => {
+    const query: Record<string, string> = { limit: '100' }
+    if (params?.classification) query.classification = params.classification
+    if (params?.departmentId) query.departmentId = params.departmentId
+    if (params?.jobDescriptionId) query.jobDescriptionId = params.jobDescriptionId
+    const response = await api.get<PaginatedResponse<unknown>>("/evaluations", { params: query });
     return response.data.data.map(normalize);
   },
 

@@ -30,6 +30,33 @@ export interface AuthResponse {
   tokens: AuthTokens;
 }
 
+// Department
+export interface Department {
+  id: string;
+  name: string;
+  description: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// JD Enums
+export type EmploymentType =
+  | "FULL_TIME"
+  | "PART_TIME"
+  | "CONTRACT"
+  | "INTERNSHIP"
+  | "FREELANCE";
+
+export type ExperienceLevel =
+  | "INTERN"
+  | "JUNIOR"
+  | "MID_LEVEL"
+  | "SENIOR"
+  | "LEAD"
+  | "MANAGER"
+  | "DIRECTOR";
+
 // Job Description
 export interface JobDescription {
   id: string;
@@ -37,6 +64,10 @@ export interface JobDescription {
   description: string;
   requirements: string;
   extractedSkills?: string[];
+  department?: { id: string; name: string } | null;
+  location?: string | null;
+  employmentTypes?: EmploymentType[];
+  experienceLevel?: ExperienceLevel | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -93,6 +124,8 @@ export type EvaluationStatus =
   | "completed"
   | "failed";
 
+export type Classification = "PASS" | "WAITLIST" | "FAIL";
+
 export type ScoreCategory =
   | "SKILLS"
   | "EXPERIENCE"
@@ -143,6 +176,7 @@ export interface CreateEvaluationRequest {
 export interface JDStats {
   totalEvaluations: number;
   averageScore: number | null;
+  classificationBreakdown: Partial<Record<Classification, number>>;
   recommendationBreakdown: Partial<Record<Recommendation, number>>;
   categoryAverages: Partial<Record<ScoreCategory, number>>;
 }

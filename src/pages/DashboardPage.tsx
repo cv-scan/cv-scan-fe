@@ -7,6 +7,7 @@ import { useAuthStore } from "../store/auth.store";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Spinner } from "../components/ui/Spinner";
+import type { Classification } from "../types";
 
 interface StatCardProps {
   label: string;
@@ -41,6 +42,26 @@ function StatCard({ label, value, href, icon, color }: StatCardProps) {
   );
 }
 
+function ClassificationBadge({
+  classification,
+}: {
+  classification: Classification;
+}) {
+  const map: Record<
+    Classification,
+    {
+      label: string;
+      variant: "default" | "success" | "warning" | "danger" | "info";
+    }
+  > = {
+    PASS: { label: "Pass", variant: "success" },
+    WAITLIST: { label: "Waitlist", variant: "warning" },
+    FAIL: { label: "Fail", variant: "danger" },
+  };
+  const { label, variant } = map[classification];
+  return <Badge variant={variant}>{label}</Badge>;
+}
+
 export function DashboardPage() {
   const { user } = useAuthStore();
 
@@ -56,7 +77,7 @@ export function DashboardPage() {
 
   const { data: evaluations = [], isLoading: evalsLoading } = useQuery({
     queryKey: ["evaluations"],
-    queryFn: evaluationService.getAll,
+    queryFn: () => evaluationService.getAll(),
   });
 
   const isLoading = jdsLoading || cvsLoading || evalsLoading;
@@ -203,6 +224,13 @@ export function DashboardPage() {
                         </p>
                       </div>
                       <div className="ml-3 flex items-center gap-2">
+                        {eval_.classification && (
+                          <ClassificationBadge
+                            classification={
+                              eval_.classification as Classification
+                            }
+                          />
+                        )}
                         {eval_.overallScore !== undefined ? (
                           <span className="text-sm font-bold text-red-500">
                             {eval_.overallScore}%
