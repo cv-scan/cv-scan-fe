@@ -7,6 +7,7 @@ import type {
   Recommendation,
   ScoreCategory,
   Department,
+  CreateDepartmentRequest,
   EmploymentType,
   ExperienceLevel,
   Classification,
@@ -76,6 +77,13 @@ export const jdService = {
       { params: { limit: 100 } },
     );
     return response.data.data;
+  },
+
+  createDepartment: async (
+    data: CreateDepartmentRequest,
+  ): Promise<Department> => {
+    const response = await api.post<Department>("/departments", data);
+    return response.data;
   },
 
   getEmploymentTypes: async (): Promise<EmploymentType[]> => {

@@ -40,6 +40,11 @@ export interface Department {
   updatedAt: string;
 }
 
+export interface CreateDepartmentRequest {
+  name: string;
+  description?: string;
+}
+
 // JD Enums
 export type EmploymentType =
   | "FULL_TIME"
